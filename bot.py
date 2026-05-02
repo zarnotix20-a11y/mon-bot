@@ -1,11 +1,7 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
-from dotenv import load_dotenv
 import os
-
-# Charge les secrets depuis le fichier .env
-load_dotenv()
 
 # Démarre le bot
 intents = discord.Intents.default()
