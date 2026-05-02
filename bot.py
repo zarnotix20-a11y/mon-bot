@@ -3,21 +3,18 @@ from discord import app_commands
 from discord.ext import commands
 import os
 
-# Démarre le bot
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# Quand le bot se connecte à Discord
 @bot.event
 async def on_ready():
     await bot.tree.sync()
     print(f"✅ Bot en ligne : {bot.user}")
 
-# La commande /avis
 @bot.tree.command(name="avis", description="Laisser un avis sur une commande")
 @app_commands.describe(
     note="Ta note de 1 à 5",
-    commentaire="Ton commentaire (ex: x1 basic fit merci)",
+    commentaire="Ton commentaire (ex: x1 McMenu merci @staff)",
     staff="Le membre du staff concerné"
 )
 async def avis(
@@ -26,8 +23,7 @@ async def avis(
     commentaire: str,
     staff: discord.Member
 ):
-    # Génère les étoiles
-    stars = "⭐" * note + "☆" * (5 - note)
+    stars = "★" * note + "☆" * (5 - note)
 
     if note == 5:
         label = "Excellent"
@@ -40,19 +36,14 @@ async def avis(
     else:
         label = "Mauvais"
 
-    # Crée la carte stylisée (embed)
-    embed = discord.Embed(color=0xFFA500)
+    embed = discord.Embed(color=0xe74c3c)
 
     embed.set_author(
-        name=f"{interaction.user.name} laisse un avis",
+        name=interaction.user.name,
         icon_url=interaction.user.display_avatar.url
     )
 
-    embed.add_field(
-        name="Note",
-        value=f"{stars} {note}/5 — {label}",
-        inline=False
-    )
+    embed.set_thumbnail(url=interaction.user.display_avatar.url)
 
     embed.add_field(
         name="Commentaire",
@@ -60,27 +51,26 @@ async def avis(
         inline=False
     )
 
-    embed.set_footer(
-        text=f"O'FOOD | {interaction.created_at.strftime('%d/%m/%Y %H:%M')}"
+    embed.add_field(
+        name="Note",
+        value=f"{stars}  {note}/5 — {label}",
+        inline=True
     )
 
-    # Envoie l'avis dans le channel configuré
+    embed.set_footer(
+        text=f"O'Food — Avis certifié • {interaction.created_at.strftime('%d/%m/%Y %H:%M')}"
+    )
+
     channel = bot.get_channel(int(os.getenv("CHANNEL_ID")))
 
     if channel is None:
         await interaction.response.send_message(
-            "❌ Erreur : channel introuvable. Vérifie le CHANNEL_ID dans le fichier .env",
+            "❌ Erreur : channel introuvable. Vérifie le CHANNEL_ID dans les variables.",
             ephemeral=True
         )
         return
 
     await channel.send(embed=embed)
+    await interaction.response.send_message("✅ Ton avis a bien été envoyé !", ephemeral=True)
 
-    # Répond à l'utilisateur (seulement visible par lui)
-    await interaction.response.send_message(
-        "✅ Ton avis a bien été envoyé !",
-        ephemeral=True
-    )
-
-# Lance le bot
 bot.run(os.getenv("TOKEN"))
