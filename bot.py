@@ -58,7 +58,7 @@ async def avis(
     )
 
     embed.set_footer(
-        text=f"O'Food — Avis certifié • {interaction.created_at.strftime('%d/%m/%Y %H:%M')}"
+        text=f"O'Food — Avis certifié • {(interaction.created_at + __import__('datetime').timedelta(hours=2)).strftime('%d/%m/%Y %H:%M')}"
     )
 
     channel = bot.get_channel(int(os.getenv("CHANNEL_ID")))
