@@ -61,6 +61,7 @@ async def avis(
         text=f"O'Food — Avis certifié • {(interaction.created_at + __import__('datetime').timedelta(hours=2)).strftime('%d/%m/%Y %H:%M')}"
     )
 
+    print(f"CHANNEL_ID utilisé : {os.getenv('CHANNEL_ID')}")
     channel = bot.get_channel(int(os.getenv("CHANNEL_ID")))
 
     if channel is None:
